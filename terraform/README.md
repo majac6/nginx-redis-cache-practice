@@ -14,6 +14,7 @@ tf plan
 tf apply -target=kind_cluster.this
 tf apply
 
+kind delete cluster --name gitops-kind
 
 kubeconfig 사용
 
@@ -32,3 +33,6 @@ k -n argocd get secret argocd-initial-admin-secret \
 http://localhost:30080 (기본값)
 
 kubectl delete pod -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
+
+
+redis-cli -h localhost -p 6379 -a local-dev-redis

@@ -4,7 +4,7 @@ import { cacheLife } from 'next/cache';
 import Image from 'next/image';
 
 export default async function Home() {
-  cacheLife({ stale: 10 }); // 10 seconds
+  cacheLife({ stale: 10, revalidate: 60 * 10, expire: 10 }); // 10 seconds
 
   const time = new Date().toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
@@ -20,7 +20,7 @@ export default async function Home() {
           <p>
             Generated At: <span className="font-mono text-lg">{time}</span>
           </p>
-          <p className="text-xs mt-1 text-yellow-700">(If cached, this time won't change on refresh for 10s)</p>
+          <p className="text-xs mt-1 text-yellow-700">(If cached, this time won&apos;t change on refresh for 10s)</p>
         </div>
 
         <Image className="dark:invert" src="/app-a/next.svg" alt="Next.js logo" width={100} height={20} priority />
