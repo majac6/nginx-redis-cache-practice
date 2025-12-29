@@ -18,6 +18,11 @@ spec:
           image: vhcns5/app-a:77db3617ac64f72c3866e0d62604802c3b286d35
           ports:
             - containerPort: 3000
+          # [추가] 환경변수 주입 (Redis 연결 정보)
+          env:
+            - name: REDIS_URL
+              # 쿠버네티스 내부 DNS 주소 조합 (redis://:비번@호스트:포트)
+              value: "redis://:local-dev-redis@redis-master.redis.svc.cluster.local:6379"
 ---
 apiVersion: v1
 kind: Service
