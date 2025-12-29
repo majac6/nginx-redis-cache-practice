@@ -1,0 +1,50 @@
+name: Deploy App A
+
+on:
+  push:
+    branches: ["release/app-a-prod"]
+    paths:
+      # app-a와 관련된 코드가 바뀔 때만 실행
+      - "apps/app-a/**"
+      - "packages/**"        # 공통 패키지 변경 시에도 재배포 필요
+      - ".github/workflows/deploy-app-a.yaml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Docker Hub 로그인
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # [핵심] 여기서 도커 이미지를 빌드하고 푸시합니다.
+      # 이 단계가 실행될 때 Dockerfile 내부의 'RUN turbo prune...'과 'RUN pnpm build...'가 작동합니다.
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .               # 프로젝트 루트 디렉토리를 컨텍스트로 지정 (중요!)
+          file: apps/app-a/Dockerfile # app-a의 Dockerfile 경로
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/app-a:${{ github.sha }}
+
+      # K8s Manifest 업데이트 (ArgoCD용)
+      - name: Update Kubernetes Manifest
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          
+          # k8s/app-a/deployment.yaml 파일이 존재하는지 확인 후 수정
+          # sed 명령어로 image: 부분의 태그를 현재 커밋 해시(SHA)로 변경
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/app-a:${{ github.sha }}|g" k8s/app-a/deployment.yaml
+          
+          git add k8s/app-a/deployment.yaml
+          git commit -m "[CI/CD] Update app-a image to ${{ github.sha }}"
+          git push

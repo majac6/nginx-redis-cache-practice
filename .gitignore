@@ -1,0 +1,10 @@
+# Ignore node modules and turbo cache
+node_modules
+.turbo
+
+# terraform files
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+*.tfvars
