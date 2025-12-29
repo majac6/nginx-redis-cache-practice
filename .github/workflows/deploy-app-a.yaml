@@ -10,6 +10,7 @@ on:
       - ".github/workflows/deploy-app-a.yaml"
       - "package.json"
       - "pnpm-lock.yaml"
+      - "k8s/app-a/deployment.yaml"
   # [추가] 수동 실행 버튼 활성화
   workflow_dispatch:
 
