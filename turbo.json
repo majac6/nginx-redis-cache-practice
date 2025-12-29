@@ -1,6 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["NODE_ENV", "REDIS_URL", "IS_DOCKER_BUILD"],
+  "globalEnv": [
+    "NODE_ENV",
+    "REDIS_URL",
+    "IS_DOCKER_BUILD",
+    "NEXT_CACHE_KEY_PREFIX",
+    "NEXT_CACHE_REDIS_ENABLED",
+    "REDIS_CONNECT_TIMEOUT_MS",
+    "NEXT_CACHE_ENTRY_TTL_SECONDS"
+  ],
   "tasks": {
     "dev": {
       "cache": false,
