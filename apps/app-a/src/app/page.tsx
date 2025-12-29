@@ -16,7 +16,7 @@ export default async function Home() {
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         {/* 디버깅용 시간 표시 (가장 상단에 추가) */}
         <div className="mb-8 p-4 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-300 w-full text-center">
-          <p className="font-bold">⚡️ ISR Test</p>
+          <p className="font-bold">⚡️ ISR Test </p>
           <p>
             Generated At: <span className="font-mono text-lg">{time}</span>
           </p>
