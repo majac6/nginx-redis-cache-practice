@@ -44,6 +44,10 @@ COPY --from=installer /app/apps/app-a/.next/standalone ./
 COPY --from=installer /app/apps/app-a/.next/static ./apps/app-a/.next/static
 COPY --from=installer /app/apps/app-a/public ./apps/app-a/public
 
+# [추가] ★★★ 캐시 핸들러 파일 수동 복사 (필수) ★★★
+# installer 스테이지에 있는 원본 파일을 -> 실행 위치(apps/app-a/)로 복사합니다.
+COPY --from=installer /app/apps/app-a/cache-handlers/redis-remote-handler.mjs ./apps/app-a/cache-handlers/redis-remote-handler.mjs
+
 EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
