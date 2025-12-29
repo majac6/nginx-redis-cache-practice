@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     remote: require.resolve('./cache-handlers/redis-remote-handler.mjs'),
   },
   cacheMaxMemorySize: 0,
+  basePath: "/app-a",
 };
 
 export default nextConfig;
