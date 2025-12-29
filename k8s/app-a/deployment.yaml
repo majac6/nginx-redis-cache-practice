@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app-a
-          image: vhcns5/app-a:acc2249476cb3160760c0ed885b7fff6946dc6da
+          image: vhcns5/app-a:c15ced0bf6c6d7b4403862a03f33277222f9e0f1
           ports:
             - containerPort: 3000
           # [추가] 환경변수 주입 (Redis 연결 정보)
