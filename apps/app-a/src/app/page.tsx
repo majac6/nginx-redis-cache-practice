@@ -1,9 +1,8 @@
-'use cache: remote';
-
 import { cacheLife } from 'next/cache';
 import Image from 'next/image';
 
 export default async function Home() {
+  'use cache: remote';
   cacheLife({ stale: 10 }); // 10 seconds
 
   const time = new Date().toLocaleString('ko-KR', {
