@@ -9,9 +9,7 @@ let clientPromise;
 async function getClient() {
   // [수정 1] 빌드 타임(Docker Build)에는 REDIS_URL이 없으므로,
   // 연결 시도 자체를 하지 않고 null을 반환하여 에러 방지
-  if (!REDIS_URL) {
-    // 필요하다면 로그를 남길 수 있습니다 (빌드 로그가 너무 시끄러우면 주석 처리)
-    // console.warn('[cacheHandler] REDIS_URL not found. Skipping Redis connection.');
+  if (process.env.IS_DOCKER_BUILD === 'true' || !REDIS_URL) {
     return null;
   }
 

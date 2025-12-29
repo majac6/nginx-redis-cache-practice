@@ -27,6 +27,9 @@ RUN pnpm install --frozen-lockfile
 # 소스 코드 전체 복사 (Prune된 결과물인 full 폴더 사용)
 COPY --from=builder /app/out/full/ .
 
+# [추가] "나는 지금 도커 빌드 중이다"라는 플래그 설정
+ENV IS_DOCKER_BUILD=true
+
 # 앱 빌드
 RUN pnpm turbo run build --filter=app-a...
 
