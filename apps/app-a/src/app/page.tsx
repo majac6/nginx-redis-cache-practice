@@ -3,6 +3,8 @@
 import { cacheLife } from 'next/cache';
 import Image from 'next/image';
 
+export const revalidate = 10;
+
 export default async function Home() {
   cacheLife({ stale: 10 }); // 10 seconds
 
