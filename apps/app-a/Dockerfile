@@ -28,10 +28,8 @@ RUN pnpm install --frozen-lockfile
 COPY --from=builder /app/out/full/ .
 
 # [추가] "나는 지금 도커 빌드 중이다"라는 플래그 설정
-ENV IS_DOCKER_BUILD=true
-
 # 앱 빌드
-RUN pnpm turbo run build --filter=app-a...
+RUN IS_DOCKER_BUILD=true npx turbo run build --filter=app-a...
 
 # 4. 실행 단계 (Runner)
 FROM base AS runner
