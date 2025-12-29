@@ -94,7 +94,7 @@ const cacheHandler = {
 
       // [LOG] 데이터가 아예 없음 -> MISS
       if (!metaJson || !bodyB64) {
-        console.log(`[REDIS MISS] Key: ${cacheKey}`);
+        process.stdout.write(`[REDIS MISS] Key: ${cacheKey}`);
         return undefined;
       }
 
@@ -112,7 +112,7 @@ const cacheHandler = {
       if (typeof meta.expire === 'number' && meta.expire > 0) {
         const expireAt = meta.timestamp + meta.expire * 1000;
         if (now > expireAt) {
-          console.log(`[REDIS EXPIRED] Key: ${cacheKey}`);
+          process.stdout.write(`[REDIS EXPIRED] Key: ${cacheKey}`);
           await client.del(metaKey, bodyKey);
           return undefined;
         }
@@ -121,7 +121,7 @@ const cacheHandler = {
       if (typeof meta.revalidate === 'number' && meta.revalidate > 0) {
         const revalidateAt = meta.timestamp + meta.revalidate * 1000;
         if (now > revalidateAt) {
-          console.log(`[REDIS REVALIDATE] Key: ${cacheKey}`);
+          process.stdout.write(`[REDIS REVALIDATE] Key: ${cacheKey}`);
           return undefined;
         }
       }
@@ -132,7 +132,7 @@ const cacheHandler = {
       const bodyBuf = Buffer.from(bodyB64, 'base64');
 
       // [LOG] 여기까지 왔으면 성공 -> HIT
-      console.log(`[REDIS HIT] 🟢 Key: ${cacheKey}`);
+      process.stdout.write(`[REDIS HIT] 🟢 Key: ${cacheKey}`);
 
       return {
         value: bufferToStream(bodyBuf),
@@ -159,7 +159,7 @@ const cacheHandler = {
     if (!client) return;
 
     try {
-      console.log(`[REDIS SET] 💾 Key: ${cacheKey}`);
+      process.stdout.write(`[REDIS SET] 💾 Key: ${cacheKey}`);
       // ReadableStream은 1회 소비이므로 tee()로 복제해서
       // 한쪽은 저장용, 한쪽은 Next가 계속 사용하도록 유지
       const [forCache, forNext] = entry.value.tee();
