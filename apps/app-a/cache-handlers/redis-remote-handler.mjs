@@ -82,7 +82,7 @@ const cacheHandler = {
   async get(cacheKey, softTags) {
     const client = await getClient();
 
-    // [수정 3] 클라이언트가 없으면(빌드 타임 or 연결 실패) 캐시 MISS 처리
+    // 1. 빌드 타임이거나 연결 실패 시
     if (!client) return undefined;
 
     const metaKey = `${PREFIX}${cacheKey}:meta`;
@@ -92,41 +92,47 @@ const cacheHandler = {
       const metaJson = await client.get(metaKey);
       const bodyB64 = await client.get(bodyKey);
 
-      if (!metaJson || !bodyB64) return undefined;
+      // [LOG] 데이터가 아예 없음 -> MISS
+      if (!metaJson || !bodyB64) {
+        console.log(`[REDIS MISS] Key: ${cacheKey}`);
+        return undefined;
+      }
 
       let meta;
       try {
         meta = JSON.parse(metaJson);
       } catch {
-        // 깨진 메타는 삭제하고 MISS 처리
         await client.del(metaKey, bodyKey);
         return undefined;
       }
 
       const now = Date.now();
 
-      // expire 기준 만료 처리 (seconds)
+      // [LOG] 데이터는 있는데 만료됨 -> EXPIRED (MISS 취급)
       if (typeof meta.expire === 'number' && meta.expire > 0) {
         const expireAt = meta.timestamp + meta.expire * 1000;
         if (now > expireAt) {
+          console.log(`[REDIS EXPIRED] Key: ${cacheKey}`);
           await client.del(metaKey, bodyKey);
           return undefined;
         }
       }
 
-      // 필요 시 revalidate 기준도 확인 (seconds)
       if (typeof meta.revalidate === 'number' && meta.revalidate > 0) {
         const revalidateAt = meta.timestamp + meta.revalidate * 1000;
         if (now > revalidateAt) {
-          // "없음"으로 처리해 Next가 재생성하도록 유도
+          console.log(`[REDIS REVALIDATE] Key: ${cacheKey}`);
           return undefined;
         }
       }
 
-      // softTags는 여기서는 단순 무시
+      // softTags 무시
       void softTags;
 
       const bodyBuf = Buffer.from(bodyB64, 'base64');
+
+      // [LOG] 여기까지 왔으면 성공 -> HIT
+      console.log(`[REDIS HIT] 🟢 Key: ${cacheKey}`);
 
       return {
         value: bufferToStream(bodyBuf),
@@ -137,7 +143,6 @@ const cacheHandler = {
         revalidate: meta.revalidate ?? 0,
       };
     } catch (e) {
-      // Redis 통신 중 에러 발생 시 안전하게 MISS 처리
       console.error('[cacheHandler] get error:', e.message);
       return undefined;
     }
@@ -154,6 +159,7 @@ const cacheHandler = {
     if (!client) return;
 
     try {
+      console.log(`[REDIS SET] 💾 Key: ${cacheKey}`);
       // ReadableStream은 1회 소비이므로 tee()로 복제해서
       // 한쪽은 저장용, 한쪽은 Next가 계속 사용하도록 유지
       const [forCache, forNext] = entry.value.tee();
