@@ -4,7 +4,7 @@ import { cacheLife } from 'next/cache';
 import Image from 'next/image';
 
 export default async function Home() {
-  cacheLife({ stale: 10, revalidate: 60 * 10, expire: 10 }); // 10 seconds
+  cacheLife({ stale: 10, expire: 10 }); // 10 seconds
 
   const time = new Date().toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
