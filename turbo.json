@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["NODE_ENV", "REDIS_URL", "IS_DOCKER_BUILD"],
   "tasks": {
     "dev": {
       "cache": false,
