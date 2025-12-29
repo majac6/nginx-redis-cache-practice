@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: app-a
-        image: vhcns5/app-a:ebc7f699708047c19b5473c3d7e868f9fbe60b78
+        image: vhcns5/app-a:5637f5e3d036bd289305d5891308385240127504
         ports:
         - containerPort: 3000
 ---
