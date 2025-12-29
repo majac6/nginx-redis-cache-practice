@@ -41,6 +41,10 @@ resource "kind_cluster" "this" {
         container_port = 30080
         host_port      = 30080
       }
+      extra_port_mappings {
+        container_port = 31379
+        host_port      = 6379
+      }
 
       # [핵심] 데이터 영속성 설정
       extra_mounts {
@@ -161,15 +165,24 @@ resource "helm_release" "redis" {
   values = [
     yamlencode({
       architecture = "standalone"
+
       auth = {
         enabled  = true
-        password = var.redis_password
+        password = var.redis_password # 변수로 관리하시던 것 유지
       }
+
       master = {
         persistence = {
           enabled = true
           size    = "1Gi"
-          # storageClass를 지정하지 않으면 기본값(standard)이 사용됨 -> /var/local-path-provisioner로 연결됨
+        }
+
+        # [추가] 외부 접속을 위한 NodePort 설정
+        service = {
+          type = "NodePort"
+          nodePorts = {
+            redis = "31379" # Kind 클러스터 설정과 매핑될 고정 포트
+          }
         }
       }
     })
@@ -179,36 +192,36 @@ resource "helm_release" "redis" {
 }
 
 
-########################################
-# 6) Argo CD Application (nginx-app) 등록 via kubernetes_manifest
-########################################
-resource "kubernetes_manifest" "argocd_app_a" {
-  manifest = {
-    "apiVersion" = "argoproj.io/v1alpha1"
-    "kind"       = "Application"
-    "metadata" = {
-      "name"      = "app-a"
-      "namespace" = "argocd"
-    }
-    "spec" = {
-      "project" = "default"
-      "source" = {
-        "repoURL"        = "https://github.com/majac6/nginx-redis-cache-practice.git"
-        "targetRevision" = "release/app-a-prod"
-        "path"           = "k8s/app-a"  # [중요] app-a 폴더 지정
-      }
-      "destination" = {
-        "server"    = "https://kubernetes.default.svc"
-        "namespace" = "apps"
-      }
-      "syncPolicy" = {
-        "automated" = {
-          "prune"    = true
-          "selfHeal" = true
-        }
-        "syncOptions" = ["CreateNamespace=true"]
-      }
-    }
-  }
-  depends_on = [helm_release.argocd]
-}
+# ########################################
+# # 6) Argo CD Application (nginx-app) 등록 via kubernetes_manifest
+# ########################################
+# resource "kubernetes_manifest" "argocd_app_a" {
+#   manifest = {
+#     "apiVersion" = "argoproj.io/v1alpha1"
+#     "kind"       = "Application"
+#     "metadata" = {
+#       "name"      = "app-a"
+#       "namespace" = "argocd"
+#     }
+#     "spec" = {
+#       "project" = "default"
+#       "source" = {
+#         "repoURL"        = "https://github.com/majac6/nginx-redis-cache-practice.git"
+#         "targetRevision" = "release/app-a-prod"
+#         "path"           = "k8s/app-a" # [중요] app-a 폴더 지정
+#       }
+#       "destination" = {
+#         "server"    = "https://kubernetes.default.svc"
+#         "namespace" = "apps"
+#       }
+#       "syncPolicy" = {
+#         "automated" = {
+#           "prune"    = true
+#           "selfHeal" = true
+#         }
+#         "syncOptions" = ["CreateNamespace=true"]
+#       }
+#     }
+#   }
+#   depends_on = [helm_release.argocd]
+# }
