@@ -1,9 +1,10 @@
 import { cacheLife } from 'next/cache';
 import Image from 'next/image';
 
-export default async function Home() {
-  'use cache: remote';
-  cacheLife({ stale: 10 }); // 10 seconds
+// [1. 캐시될 부분] 별도 함수(또는 컴포넌트)로 분리하고 여기에 'use cache'를 붙입니다.
+async function CachedTime() {
+  'use cache: remote'; // ★ 이 함수만 캐싱됩니다 (Redis 저장 대상)
+  cacheLife({ stale: 10 }); // 10초 유효
 
   const time = new Date().toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
@@ -11,16 +12,22 @@ export default async function Home() {
   });
 
   return (
+    <div className="mb-8 p-4 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-300 w-full text-center">
+      <p className="font-bold">⚡️ Next.js 16 use cache Test</p>
+      <p>
+        Cached At: <span className="font-mono text-lg">{time}</span>
+      </p>
+      <p className="text-xs mt-1 text-yellow-700">(This part is cached in Redis for 10s)</p>
+    </div>
+  );
+}
+
+export default function Home() {
+  return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        {/* 디버깅용 시간 표시 (가장 상단에 추가) */}
-        <div className="mb-8 p-4 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-300 w-full text-center">
-          <p className="font-bold">⚡️ ISR Test </p>
-          <p>
-            Generated At: <span className="font-mono text-lg">{time}</span>
-          </p>
-          <p className="text-xs mt-1 text-yellow-700">(If cached, this time won&apos;t change on refresh for 10s)</p>
-        </div>
+        {/* 분리한 캐시 컴포넌트 호출 */}
+        <CachedTime />
 
         <Image className="dark:invert" src="/app-a/next.svg" alt="Next.js logo" width={100} height={20} priority />
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
