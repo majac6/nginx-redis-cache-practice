@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: prerender
-          image: vhcns5/prerender:9de7ccbcaa348966c028d6b2eb0ef7221065f11b
+          image: vhcns5/prerender:6a46adbe3efbb774c4f210e5ff918ea793d9ec9d
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4000
