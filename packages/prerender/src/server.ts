@@ -17,6 +17,7 @@ app.get('/render', async (req, res) => {
     const { html, cache } = await render(url);
 
     res.setHeader('X-Prerender-Cache', cache);
+    res.setHeader('X-Prerender-Cache-TTL-seconds', config.cacheTtlSeconds);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
   } catch (err) {

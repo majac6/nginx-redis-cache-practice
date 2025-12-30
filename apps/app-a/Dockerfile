@@ -9,7 +9,7 @@ RUN npm install -g turbo
 COPY . .
 # [핵심] app-a와 관련된 패키지들만 'out' 폴더로 추출 (Lockfile 포함)
 # --docker 옵션은 의존성 설치용 json 폴더와 빌드용 full 폴더를 분리해줍니다.
-RUN turbo prune --scope=app-a --docker
+RUN turbo prune --scope=@apps/a --docker
 
 # 2. 의존성 설치 단계 (캐싱 최적화)
 FROM base AS installer

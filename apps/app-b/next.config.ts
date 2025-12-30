@@ -1,9 +1,9 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheHandler: require.resolve("./cache-handler.mjs"),
+  output: 'standalone',
   cacheMaxMemorySize: 0,
+  basePath: '/app-b',
 };
 
 export default nextConfig;

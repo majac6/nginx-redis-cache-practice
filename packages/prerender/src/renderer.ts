@@ -1,5 +1,6 @@
 import { getCache, setCache } from './cache';
 import { buildCacheKey } from './cache-key';
+import { config } from './config';
 
 export async function render(url: string): Promise<{
   html: string;
@@ -24,7 +25,7 @@ export async function render(url: string): Promise<{
 
   const html = await res.text();
 
-  await setCache(key, html);
+  await setCache(key, html, config.cacheTtlSeconds);
 
   return { html, cache: 'MISS' };
 }
