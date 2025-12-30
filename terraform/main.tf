@@ -194,7 +194,7 @@ resource "helm_release" "redis" {
 
 resource "kubernetes_manifest" "prerender_application" {
   manifest = yamldecode(
-    file("${path.module}/k8s/prerender/application.yaml")
+    file(abspath("${path.root}/../k8s/prerender/application.yaml"))
   )
 
   depends_on = [
@@ -204,7 +204,7 @@ resource "kubernetes_manifest" "prerender_application" {
 
 resource "kubernetes_manifest" "app_a_application" {
   manifest = yamldecode(
-    file("${path.module}/k8s/app-a/application.yaml")
+    file(abspath("${path.root}/../k8s/app-a/application.yaml"))
   )
 
   depends_on = [

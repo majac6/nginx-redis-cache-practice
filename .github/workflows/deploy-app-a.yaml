@@ -2,7 +2,7 @@ name: Deploy App A
 
 on:
   push:
-    branches: ["release/app-a-prod"]
+    branches: ["main"]
     paths:
       # app-a와 관련된 코드가 바뀔 때만 실행
       - "apps/app-a/**"
