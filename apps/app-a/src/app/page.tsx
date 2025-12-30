@@ -1,10 +1,11 @@
-import { cacheLife } from 'next/cache';
+// import { cacheLife } from 'next/cache';
 import Image from 'next/image';
+import { Suspense } from 'react';
 
 // [1. 캐시될 부분] 별도 함수(또는 컴포넌트)로 분리하고 여기에 'use cache'를 붙입니다.
 async function CachedTime() {
-  'use cache: remote'; // ★ 이 함수만 캐싱됩니다 (Redis 저장 대상)
-  cacheLife({ stale: 10 }); // 10초 유효
+  // 'use cache: remote'; // ★ 이 함수만 캐싱됩니다 (Redis 저장 대상)
+  // cacheLife({ stale: 10 }); // 10초 유효
 
   const time = new Date().toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
@@ -27,7 +28,9 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         {/* 분리한 캐시 컴포넌트 호출 */}
-        <CachedTime />
+        <Suspense fallback={<p>Loading cached time...</p>}>
+          <CachedTime />
+        </Suspense>
 
         <Image className="dark:invert" src="/app-a/next.svg" alt="Next.js logo" width={100} height={20} priority />
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prerender
+  namespace: apps
+spec:
+  selector:
+    app: prerender
+  ports:
+    - port: 80
+      targetPort: 4000
+      protocol: TCP

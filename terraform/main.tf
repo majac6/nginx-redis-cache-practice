@@ -192,37 +192,22 @@ resource "helm_release" "redis" {
   depends_on = [kubernetes_namespace.redis]
 }
 
+resource "kubernetes_manifest" "prerender_application" {
+  manifest = yamldecode(
+    file("${path.module}/k8s/prerender/application.yaml")
+  )
 
-########################################
-# 6) Argo CD Application (nginx-app) 등록 via kubernetes_manifest
-########################################
-resource "kubernetes_manifest" "argocd_app_a" {
-  manifest = {
-    "apiVersion" = "argoproj.io/v1alpha1"
-    "kind"       = "Application"
-    "metadata" = {
-      "name"      = "app-a"
-      "namespace" = "argocd"
-    }
-    "spec" = {
-      "project" = "default"
-      "source" = {
-        "repoURL"        = "https://github.com/majac6/nginx-redis-cache-practice.git"
-        "targetRevision" = "release/app-a-prod"
-        "path"           = "k8s/app-a" # [중요] app-a 폴더 지정
-      }
-      "destination" = {
-        "server"    = "https://kubernetes.default.svc"
-        "namespace" = "apps"
-      }
-      "syncPolicy" = {
-        "automated" = {
-          "prune"    = true
-          "selfHeal" = true
-        }
-        "syncOptions" = ["CreateNamespace=true"]
-      }
-    }
-  }
-  depends_on = [helm_release.argocd]
+  depends_on = [
+    helm_release.argocd
+  ]
+}
+
+resource "kubernetes_manifest" "app_a_application" {
+  manifest = yamldecode(
+    file("${path.module}/k8s/app-a/application.yaml")
+  )
+
+  depends_on = [
+    helm_release.argocd
+  ]
 }
