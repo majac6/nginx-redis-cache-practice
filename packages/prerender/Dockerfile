@@ -7,20 +7,15 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /repo
 
-# workspace 설정
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 
-# prerender 메타
 COPY packages/prerender/package.json packages/prerender/tsconfig.json ./packages/prerender/
 
-# 의존성 설치 (workspace 기준)
 RUN pnpm install --frozen-lockfile
 
-# 소스 복사
 COPY packages/prerender ./packages/prerender
 
-# prerender 빌드
 RUN pnpm --filter @infra/prerender build
 
 
@@ -34,10 +29,14 @@ ENV PORT=8080
 
 WORKDIR /app
 
-# prerender 실행에 필요한 것만 복사
-COPY --from=builder /repo/packages/prerender/dist ./dist
-COPY --from=builder /repo/packages/prerender/package.json ./
+# workspace 구조 그대로 복사 (핵심)
 COPY --from=builder /repo/node_modules ./node_modules
+COPY --from=builder /repo/packages ./packages
+COPY --from=builder /repo/package.json ./
+COPY --from=builder /repo/pnpm-workspace.yaml ./
+
+# prerender 패키지 기준으로 실행
+WORKDIR /app/packages/prerender
 
 EXPOSE 8080
 
