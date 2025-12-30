@@ -5,15 +5,14 @@ metadata:
   namespace: apps
 spec:
   ingressClassName: nginx
-
   rules:
-    - host: localhost
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: prerender-svc
-                port:
-                  number: 80
+  - host: localhost
+    http:
+      paths:
+      - path: /prerender
+        pathType: Prefix
+        backend:
+          service:
+            name: prerender-svc
+            port:
+              number: 80

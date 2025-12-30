@@ -135,12 +135,15 @@ resource "helm_release" "argocd" {
           enabled          = true
           ingressClassName = "nginx"
           hostname         = "localhost"
+          path             = "/argocd"
+          pathType         = "Prefix"
         }
       }
       configs = {
         params = {
           # 실습 편의(HTTP 접근) - 운영 비권장
           "server.insecure" = true
+          "server.rootpath"  = "/argocd"
         }
       }
     })

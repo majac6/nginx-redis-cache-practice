@@ -25,6 +25,10 @@ app.get('/render', async (req, res) => {
   }
 });
 
+app.get('/health', (req, res) => {
+  res.send('OK');
+});
+
 app.listen(config.port, () => {
   console.log(`[prerender] listening on ${config.port}`);
 });
