@@ -1,56 +1,44 @@
 # =========================
-# 0) Base
+# 1) Build stage
 # =========================
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat
-RUN apk update
+FROM node:20-alpine AS builder
 
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# =========================
-# 1) Prune
-# =========================
-FROM base AS builder
-WORKDIR /app
+WORKDIR /repo
 
-RUN npm install -g turbo
-COPY . .
+# workspace 설정
+COPY pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml ./
 
-# prerender 패키지만 추출 (lockfile 포함)
-RUN turbo prune --scope=@infra/prerender --docker
+# prerender 메타
+COPY packages/prerender/package.json packages/prerender/tsconfig.json ./packages/prerender/
 
-
-# =========================
-# 2) Install
-# =========================
-FROM base AS installer
-WORKDIR /app
-
-# prune 결과 중 의존성 계산에 필요한 파일만 복사
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
-
-RUN npm install -g pnpm
+# 의존성 설치 (workspace 기준)
 RUN pnpm install --frozen-lockfile
 
-# 소스 전체 복사 (prune된 full 기준)
-COPY --from=builder /app/out/full/ .
+# 소스 복사
+COPY packages/prerender ./packages/prerender
 
 # prerender 빌드
-RUN npx turbo run build --filter=@infra/prerender...
+RUN pnpm --filter @infra/prerender build
 
 
 # =========================
-# 3) Runner
+# 2) Runtime stage
 # =========================
-FROM base AS runner
-WORKDIR /app
+FROM node:20-alpine AS runner
 
 ENV NODE_ENV=production
+ENV PORT=8080
 
-# 실행에 필요한 것만 복사
-COPY --from=installer /app/packages/prerender/dist ./dist
-COPY --from=installer /app/packages/prerender/package.json ./
-COPY --from=installer /app/node_modules ./node_modules
+WORKDIR /app
+
+# prerender 실행에 필요한 것만 복사
+COPY --from=builder /repo/packages/prerender/dist ./dist
+COPY --from=builder /repo/packages/prerender/package.json ./
+COPY --from=builder /repo/node_modules ./node_modules
 
 EXPOSE 8080
+
 CMD ["node", "dist/server.js"]

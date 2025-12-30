@@ -52,4 +52,4 @@ jobs:
 
           git add k8s/prerender/deployment.yaml
           git commit -m "[CI/CD] Update prerender image to ${{ github.sha }}"
-          git push
+          git pull --rebase && git push
