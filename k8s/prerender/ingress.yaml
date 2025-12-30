@@ -13,6 +13,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: pkg-prerender-svc
+            name: prerender-svc
             port:
-              number: 4000
+              number: 80

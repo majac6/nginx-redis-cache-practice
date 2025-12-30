@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pkg-prerender-svc
+  name: prerender-svc
   namespace: apps
 spec:
   selector:
-    app: pkg-prerender
+    app: prerender
   ports:
     - port: 80
       targetPort: 4000
