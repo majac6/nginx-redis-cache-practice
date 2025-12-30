@@ -25,7 +25,7 @@ RUN pnpm --filter @infra/prerender build
 FROM node:20-alpine AS runner
 
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=4000
 
 WORKDIR /app
 
@@ -38,6 +38,6 @@ COPY --from=builder /repo/pnpm-workspace.yaml ./
 # prerender 패키지 기준으로 실행
 WORKDIR /app/packages/prerender
 
-EXPOSE 8080
+EXPOSE 4000
 
 CMD ["node", "dist/server.js"]

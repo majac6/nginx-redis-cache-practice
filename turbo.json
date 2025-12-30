@@ -2,6 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalEnv": [
     "NODE_ENV",
+    "PORT",
     "REDIS_URL",
     "IS_DOCKER_BUILD",
     "NEXT_CACHE_KEY_PREFIX",
