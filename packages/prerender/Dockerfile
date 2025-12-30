@@ -1,47 +1,56 @@
 # =========================
-# 1) Build stage
+# 0) Base
 # =========================
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+RUN apk update
 
-# pnpm 활성화
-RUN corepack enable && corepack prepare pnpm@latest --activate
 
-WORKDIR /repo
+# =========================
+# 1) Prune
+# =========================
+FROM base AS builder
+WORKDIR /app
 
-# workspace 전체 복사 (의존성 해석용)
-COPY pnpm-workspace.yaml ./
-COPY package.json pnpm-lock.yaml ./
+RUN npm install -g turbo
+COPY . .
 
-# prerender 패키지 메타만 먼저 복사 (캐시 최적화)
-COPY packages/prerender/package.json packages/prerender/tsconfig.json ./packages/prerender/
+# prerender 패키지만 추출 (lockfile 포함)
+RUN turbo prune --scope=@infra/prerender --docker
 
-# 의존성 설치 (workspace 기준)
+
+# =========================
+# 2) Install
+# =========================
+FROM base AS installer
+WORKDIR /app
+
+# prune 결과 중 의존성 계산에 필요한 파일만 복사
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+
+RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile
 
-# 소스 복사
-COPY packages/prerender ./packages/prerender
+# 소스 전체 복사 (prune된 full 기준)
+COPY --from=builder /app/out/full/ .
 
 # prerender 빌드
-RUN pnpm --filter @infra/prerender build
+RUN npx turbo run build --filter=@infra/prerender...
 
 
 # =========================
-# 2) Runtime stage
+# 3) Runner
 # =========================
-FROM node:20-alpine AS runner
+FROM base AS runner
+WORKDIR /app
 
 ENV NODE_ENV=production
 
-WORKDIR /app
-
-# 빌드 결과만 복사
-COPY --from=builder /repo/packages/prerender/dist ./dist
-COPY --from=builder /repo/packages/prerender/package.json ./
-
-# prod 의존성만 설치
-RUN corepack enable && corepack prepare pnpm@latest --activate \
-  && pnpm install --prod --frozen-lockfile
+# 실행에 필요한 것만 복사
+COPY --from=installer /app/packages/prerender/dist ./dist
+COPY --from=installer /app/packages/prerender/package.json ./
+COPY --from=installer /app/node_modules ./node_modules
 
 EXPOSE 8080
-
 CMD ["node", "dist/server.js"]
