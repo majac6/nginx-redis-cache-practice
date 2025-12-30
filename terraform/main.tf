@@ -25,15 +25,15 @@ resource "kind_cluster" "this" {
       role = "control-plane"
 
       # Ingress HTTP/HTTPS 접근용 (호스트 -> kind 노드)
-      extra_port_mappings {
-        container_port = 80
-        host_port      = 8080
-      }
+      # extra_port_mappings {
+      #   container_port = 80
+      #   host_port      = 8080
+      # }
 
-      extra_port_mappings {
-        container_port = 443
-        host_port      = 8443
-      }
+      # extra_port_mappings {
+      #   container_port = 443
+      #   host_port      = 8443
+      # }
 
       # [추가] 30080 포트 매핑 추가
       # 호스트(내 PC) 30080 -> KinD 컨테이너 30080
@@ -143,7 +143,7 @@ resource "helm_release" "argocd" {
         params = {
           # 실습 편의(HTTP 접근) - 운영 비권장
           "server.insecure" = true
-          "server.rootpath"  = "/argocd"
+          "server.rootpath" = "/argocd"
         }
       }
     })
