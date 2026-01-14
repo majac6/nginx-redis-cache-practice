@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-a-ingress
-  namespace: apps
+  name: my-app
+  namespace: my-app
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-    - host: localhost
+    - host: app-a.majac.co.kr
       http:
         paths:
           - path: /app-a
             pathType: Prefix
             backend:
               service:
-                name: app-a-svc
+                name: my-app-service
                 port:
                   number: 80
