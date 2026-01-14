@@ -1,6 +1,5 @@
 # 1. Prune 단계: 필요한 것만 발라내기
 FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat
 RUN apk update
 
 FROM base AS builder
@@ -35,7 +34,7 @@ RUN IS_DOCKER_BUILD=true npx turbo run build --filter=@apps/a...
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # next.config.js에서 output: 'standalone' 설정 필수
 COPY --from=installer /app/apps/app-a/.next/standalone ./
@@ -43,7 +42,7 @@ COPY --from=installer /app/apps/app-a/.next/static ./apps/app-a/.next/static
 COPY --from=installer /app/apps/app-a/public ./apps/app-a/public
 
 EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "apps/app-a/server.js"]
