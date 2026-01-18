@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-test-app
-  namespace: my-test-app
+  name: my-test-app-a-ingress
+  namespace: my-test-apps
 spec:
   ingressClassName: traefik
   rules:
     - host: app-a.polymorph.co.kr
       http:
         paths:
-          - path: /app-a
-            pathType: Prefix
+          # - path: /app-a
+          #   pathType: Prefix
             backend:
               service:
-                name: my-app-service
+                name: app-a-test-svc
                 port:
                   number: 80

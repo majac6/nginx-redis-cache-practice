@@ -13,7 +13,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: my-test-app
+    namespace: my-test-apps
 
   syncPolicy:
     automated:
