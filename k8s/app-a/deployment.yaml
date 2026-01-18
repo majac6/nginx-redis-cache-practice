@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-a
+  name: app-a-test
   namespace: apps
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app-a
+      app: app-a-test
   template:
     metadata:
       labels:
-        app: app-a
+        app: app-a-test
     spec:
       containers:
-        - name: app-a
+        - name: app-a-test
           image: vhcns5/app-a:4c52848ec3c58cb5942157a0040b8b3dcb23c0ed
           ports:
             - containerPort: 3000

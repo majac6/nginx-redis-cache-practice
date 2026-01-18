@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-app
-  namespace: my-app
+  name: my-test-app
+  namespace: my-test-app
 spec:
   ingressClassName: traefik
   rules:
-    - host: app-a.majac.co.kr
+    - host: app-a.polymorph.co.kr
       http:
         paths:
           - path: /app-a
