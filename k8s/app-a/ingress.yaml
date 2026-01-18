@@ -9,8 +9,8 @@ spec:
     - host: app-a.polymorph.co.kr
       http:
         paths:
-          # - path: /app-a
-          #   pathType: Prefix
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: app-a-test-svc
