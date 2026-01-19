@@ -37,16 +37,18 @@ jobs:
           provenance: false
           sbom: false
 
-      # K8s Manifest 업데이트 (ArgoCD용)
-      - name: Update Kubernetes Manifest
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-
-          # k8s/app-a/deployment.yaml 파일이 존재하는지 확인 후 수정
-          # sed 명령어로 image: 부분의 태그를 현재 커밋 해시(SHA)로 변경
-          sed -i "s|image: .*|image: registry.polymorph.co.kr/app-a:${{ github.sha }}|g" k8s/app-a/deployment.yaml
-
-          git add k8s/app-a/deployment.yaml
-          git commit -m "[CI/CD] Update app-a image to ${{ github.sha }}"
-          git pull --rebase && git push
+      # polymorph-k8s 저장소의 이미지 태그 업데이트                                                                                              
+      - name: Update image tag in polymorph-k8s                                                                                                  
+        run: |                                                                                                                                   
+          git clone https://x-access-token:${{ secrets.POLYMORPH_K8S_TOKEN }}@github.com/polym-team/polymorph-k8s.git                            
+          cd polymorph-k8s                                                                                                                       
+                                                                                                                                                
+          git config user.email "github-actions@github.com"                                                                                      
+          git config user.name "GitHub Actions"                                                                                                  
+                                                                                                                                                
+          # app-a 디렉토리의 deployment.yaml 이미지 태그 수정                                                                                    
+          sed -i "s|image: registry.polymorph.co.kr/app-a:.*|image: registry.polymorph.co.kr/app-a:${{ github.sha }}|g" app-a/deployment.yaml    
+                                                                                                                                                
+          git add app-a/deployment.yaml                                                                                                          
+          git commit -m "chore(app-a): update image to ${{ github.sha }}"                                                                        
+          git push
