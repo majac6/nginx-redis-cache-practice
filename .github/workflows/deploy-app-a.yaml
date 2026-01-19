@@ -48,8 +48,8 @@ jobs:
           git config user.name "GitHub Actions"                                                                                                  
                                                                                                                                                 
           # app-a 디렉토리의 deployment.yaml 이미지 태그 수정                                                                                    
-          sed -i "s|image: registry.polymorph.co.kr/app-a:.*|image: registry.polymorph.co.kr/app-a:${{ github.sha }}|g" app-a/deployment.yaml    
-                                                                                                                                                
-          git add app-a/deployment.yaml                                                                                                          
+          sed -i "s|image: registry.polymorph.co.kr/app-a:.*|image: registry.polymorph.co.kr/app-a:${{ github.sha }}|g" manifests/app-a/deployment.yaml    
+
+          git add manifests/app-a/deployment.yaml                                                                                                          
           git commit -m "chore(app-a): update image to ${{ github.sha }}"                                                                        
           git push
