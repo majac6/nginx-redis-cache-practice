@@ -25,13 +25,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Docker Hub 로그인
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       # [핵심] 여기서 도커 이미지를 빌드하고 푸시합니다.
       # 이 단계가 실행될 때 Dockerfile 내부의 'RUN turbo prune...'과 'RUN pnpm build...'가 작동합니다.
       - name: Build and Push Docker Image
@@ -40,7 +33,7 @@ jobs:
           context: . # 프로젝트 루트 디렉토리를 컨텍스트로 지정 (중요!)
           file: apps/app-a/Dockerfile # app-a의 Dockerfile 경로
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/app-a:${{ github.sha }}
+          tags: registry.polymorph.co.kr/app-a:${{ github.sha }}
 
       # K8s Manifest 업데이트 (ArgoCD용)
       - name: Update Kubernetes Manifest
@@ -50,7 +43,7 @@ jobs:
 
           # k8s/app-a/deployment.yaml 파일이 존재하는지 확인 후 수정
           # sed 명령어로 image: 부분의 태그를 현재 커밋 해시(SHA)로 변경
-          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/app-a:${{ github.sha }}|g" k8s/app-a/deployment.yaml
+          sed -i "s|image: .*|image: registry.polymorph.co.kr/app-a:${{ github.sha }}|g" k8s/app-a/deployment.yaml
 
           git add k8s/app-a/deployment.yaml
           git commit -m "[CI/CD] Update app-a image to ${{ github.sha }}"
