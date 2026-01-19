@@ -34,6 +34,7 @@ jobs:
           file: apps/app-a/Dockerfile # app-a의 Dockerfile 경로
           push: true
           tags: registry.polymorph.co.kr/app-a:${{ github.sha }}
+          provenance: false
 
       # K8s Manifest 업데이트 (ArgoCD용)
       - name: Update Kubernetes Manifest
