@@ -32,7 +32,7 @@ export default function Home() {
           <CachedTime />
         </Suspense>
 
-        <Image className="dark:invert" src="/app-a/next.svg" alt="Next.js logo" width={100} height={20} priority />
+        <Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={100} height={20} priority />
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">To get started, edit the page.tsx file.</h1>
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
@@ -60,7 +60,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Image className="dark:invert" src="/app-a/vercel.svg" alt="Vercel logomark" width={16} height={16} />
+            <Image className="dark:invert" src="/vercel.svg" alt="Vercel logomark" width={16} height={16} />
             Deploy Now
           </a>
           <a
