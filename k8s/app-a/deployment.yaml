@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: app-a-test
-          image: vhcns5/app-a:c8cb7a5aa709d4dd3d24079d5f35855e1eee8421
+          image: registry.polymorph.co.kr/app-a:45a73763ffd52042d19a9b459068ab2dad8c8d50
           ports:
             - containerPort: 3000
