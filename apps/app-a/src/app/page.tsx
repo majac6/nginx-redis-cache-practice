@@ -75,6 +75,8 @@ export default function Home() {
             Documentation
           </a>
         </div>
+
+        <div>배포가 잘 되었는지 확인하기 위한 텍스트</div>
       </main>
     </div>
   );
