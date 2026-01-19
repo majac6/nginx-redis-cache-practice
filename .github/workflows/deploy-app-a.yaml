@@ -35,6 +35,7 @@ jobs:
           push: true
           tags: registry.polymorph.co.kr/app-a:${{ github.sha }}
           provenance: false
+          sbom: false
 
       # K8s Manifest 업데이트 (ArgoCD용)
       - name: Update Kubernetes Manifest
